@@ -6,7 +6,7 @@ A complete, fully playable classic Tetris game built entirely in a single `index
 
 ## Play
 
-Open `index.html` in any modern browser. No build tools, no dependencies, no server required.
+Open [index.html](index.html) in any modern browser. No build tools, no dependencies, no server required.
 
 ## Features
 
