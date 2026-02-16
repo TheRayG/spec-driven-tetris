@@ -8,6 +8,8 @@ A complete, fully playable Tetris game built entirely in a single `index.html` f
 
 Open `index.html` in any modern browser. No build tools, no dependencies, no server required.
 
+![Gameplay screenshot](TetrisGameplay.png)
+
 ## Features
 
 ### Core Gameplay
