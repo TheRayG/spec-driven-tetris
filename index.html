@@ -835,6 +835,10 @@ function startLockDelay() {
   lockDelayTimer = setTimeout(() => {
     lockDelayTimer = null;
     if (gameActive && !gamePaused && !gameOver) {
+      if (!collides(currentPiece, currentX, currentY + 1)) {
+        // Piece is no longer resting (e.g. rotated into open space) — let gravity resume
+        return;
+      }
       lockPiece();
     }
   }, dropSpeed);

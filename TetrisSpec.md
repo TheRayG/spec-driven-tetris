@@ -88,6 +88,7 @@ Defined as 2D arrays. Colors in order: `cyan, yellow, purple, green, red, blue, 
 - Only one timer active at a time
 - Hard drop and soft drop bypass lock delay (lock immediately)
 - Cleared when: piece locks, piece holds, game pauses, game over
+- **Re-check on expiry**: When the lock delay timer fires, re-check whether the piece can still move down (`collides` with Y+1). If the piece is no longer resting (e.g. a rotation during lock delay opened space below), do **not** lock — simply return and let gravity (`autoDown`) resume dropping the piece.
 
 ### Hold Piece
 - Swap current piece with held piece (or next piece if hold is empty)
