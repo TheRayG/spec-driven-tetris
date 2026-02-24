@@ -176,8 +176,11 @@ All three sections share a consistent container style matching the right-panel A
 
 **Statistics section**: Heading "STATISTICS". Label (gray) / Value (green) rows at 8px font:
 - Score, Level, Lines, Speed (in ms), AI Score (1 decimal place, e.g. `-28.0`; "N/A" when autoplay off)
+- All numeric values (Score, Level, Lines) use locale-aware comma separation for large numbers (e.g. `451,294`). Speed and AI Score are exempt.
 
-**High Score section**: Heading "HIGH SCORE". Same label/value row styling as Statistics (8px font). Shows Score, Lines, Level loaded from localStorage. Includes "Reset High Score" button with confirmation prompt.
+**High Score section**: Heading "HIGH SCORE". Same label/value row styling as Statistics (8px font). Shows Score, Lines, Level loaded from localStorage with comma-separated formatting. Includes "Reset High Score" button with confirmation prompt.
+
+**Game Over overlay**: Final stats (Score, Lines, Level) also use comma-separated formatting.
 
 ### Center — Game Board + Previews
 - Board wrapper with cyan border and glow
@@ -201,9 +204,9 @@ All three sections share a consistent container style matching the right-panel A
 | Label | Key | Default | Min | Max | Step |
 |-------|-----|---------|-----|-----|------|
 | Lines | lines | 2.0 | 0 | 2 | 0.1 |
-| Holes | holes | -2.0 | -2 | 0 | 0.1 |
-| Bump | bumpiness | -1.0 | -1 | 0 | 0.1 |
-| Height | height | -0.01 | -0.1 | 0 | 0.01 |
+| Holes | holes | -0.6 | -2 | 0 | 0.1 |
+| Bump | bumpiness | -0.8 | -1 | 0 | 0.1 |
+| Height | height | -0.10 | -0.1 | 0 | 0.01 |
 | Valley | valley | -1.0 | -1 | 0 | 0.1 |
 | Top N | overlayTopN | 3 | 1 | 5 | 1 |
 
@@ -319,17 +322,18 @@ Two grids rendered in the AI Visualization container — one for current piece, 
 - If all scores are equal → yellow (hue 60°)
 
 **Special cells**:
+- Wall columns (x=-1 and x=BOARD_WIDTH): lighter gray (`#444`), class `wall-cell`, `cursor: default`. These are the first and last columns in each row, visually denoting the board walls.
 - Invalid (out-of-bounds): dark gray (`#333`), class `invalid-cell`
 - Game over: black background, `1px solid #FF4444` border, class `game-over-cell`
 - Best move: `2px solid #00FFFF` outline, class `best`
 
-**Hold grid**: Always visible. Shows "Hold (N/A)" with placeholder (4×10 gray cells) when no hold piece exists.
+**Hold grid**: Always visible. Shows "Hold (N/A)" with placeholder (4×12 gray cells, first/last columns wall-styled) when no hold piece exists.
 
 **Tooltip** (on hover): Absolute positioned near cursor. Dark opaque background (`rgba(0,0,0,0.95)`), cyan border, 7px monospace font, max-width 160px, `pointer-events: none`. Shows: rotation, X position, (Hold) flag, composite score, and all 5 factor scores.
 
 **Click interaction**: Clicking a valid heatmap cell updates the score breakdown to show that placement's scores.
 
-**Placeholder state**: 4 rows × 10 columns of gray cells with R0–R3 labels. Shown when viz is off or no evaluation data exists.
+**Placeholder state**: 4 rows × 12 columns of gray cells with R0–R3 labels. First and last columns use wall styling (`#444`). Shown when viz is off or no evaluation data exists.
 
 ### Layer 2: Board Overlay — Top N Placements
 

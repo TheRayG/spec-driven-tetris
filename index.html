@@ -271,6 +271,7 @@ body {
   cursor: pointer;
   background: #333;
 }
+.heatmap-cell.wall-cell { background: #444; cursor: default; }
 .heatmap-cell.invalid-cell { background: #333; cursor: default; }
 .heatmap-cell.game-over-cell {
   background: #000;
@@ -538,16 +539,16 @@ body {
           <input type="range" id="weight-lines" min="0" max="2" step="0.1" value="2.0">
         </div>
         <div class="tuning-item">
-          <div class="tuning-label-row"><label>Holes</label><span class="tuning-value" id="val-holes">-2.0</span></div>
-          <input type="range" id="weight-holes" min="-2" max="0" step="0.1" value="-2.0">
+          <div class="tuning-label-row"><label>Holes</label><span class="tuning-value" id="val-holes">-0.6</span></div>
+          <input type="range" id="weight-holes" min="-2" max="0" step="0.1" value="-0.6">
         </div>
         <div class="tuning-item">
-          <div class="tuning-label-row"><label>Bump</label><span class="tuning-value" id="val-bumpiness">-1.0</span></div>
-          <input type="range" id="weight-bumpiness" min="-1" max="0" step="0.1" value="-1.0">
+          <div class="tuning-label-row"><label>Bump</label><span class="tuning-value" id="val-bumpiness">-0.8</span></div>
+          <input type="range" id="weight-bumpiness" min="-1" max="0" step="0.1" value="-0.8">
         </div>
         <div class="tuning-item">
-          <div class="tuning-label-row"><label>Height</label><span class="tuning-value" id="val-height">-0.01</span></div>
-          <input type="range" id="weight-height" min="-0.1" max="0" step="0.01" value="-0.01">
+          <div class="tuning-label-row"><label>Height</label><span class="tuning-value" id="val-height">-0.10</span></div>
+          <input type="range" id="weight-height" min="-0.1" max="0" step="0.01" value="-0.10">
         </div>
         <div class="tuning-item">
           <div class="tuning-label-row"><label>Valley</label><span class="tuning-value" id="val-valley">-1.0</span></div>
@@ -584,7 +585,7 @@ const TETROMINOS = [
 ];
 
 const DEFAULT_WEIGHTS = {
-  lines: 2.0, holes: -2.0, bumpiness: -1.0, height: -0.01, valley: -1.0
+  lines: 2.0, holes: -0.6, bumpiness: -0.8, height: -0.10, valley: -1.0
 };
 const DEFAULT_TOP_N = 3;
 
@@ -1031,18 +1032,20 @@ function renderPreview(el, type) {
 }
 
 // ===== STATS =====
+function fmtNum(n) { return n.toLocaleString(); }
+
 function updateStats() {
-  document.getElementById('stat-score').textContent = score;
-  document.getElementById('stat-level').textContent = level;
-  document.getElementById('stat-lines').textContent = lines;
+  document.getElementById('stat-score').textContent = fmtNum(score);
+  document.getElementById('stat-level').textContent = fmtNum(level);
+  document.getElementById('stat-lines').textContent = fmtNum(lines);
   document.getElementById('stat-speed').textContent = dropSpeed + 'ms';
   document.getElementById('stat-ai-score').textContent = autoplayEnabled && lastAIEvaluation ? lastAIEvaluation.bestMove.score.toFixed(1) : 'N/A';
 }
 
 function displayHighScore() {
-  document.getElementById('hi-score').textContent = highScore.score;
-  document.getElementById('hi-lines').textContent = highScore.lines;
-  document.getElementById('hi-level').textContent = highScore.level;
+  document.getElementById('hi-score').textContent = fmtNum(highScore.score);
+  document.getElementById('hi-lines').textContent = fmtNum(highScore.lines);
+  document.getElementById('hi-level').textContent = fmtNum(highScore.level);
 }
 
 function checkHighScore() {
@@ -1121,9 +1124,9 @@ function triggerGameOver() {
   renderVizPlaceholder();
   checkHighScore();
 
-  document.getElementById('go-score').textContent = 'Score: ' + score;
-  document.getElementById('go-lines').textContent = 'Lines: ' + lines;
-  document.getElementById('go-level').textContent = 'Level: ' + level;
+  document.getElementById('go-score').textContent = 'Score: ' + fmtNum(score);
+  document.getElementById('go-lines').textContent = 'Lines: ' + fmtNum(lines);
+  document.getElementById('go-level').textContent = 'Level: ' + fmtNum(level);
   gameoverScreen.classList.remove('hidden');
   updateStats();
 }
@@ -1519,7 +1522,9 @@ function renderHeatmap(containerId, placements, bestMove, pieceType) {
       const cell = document.createElement('div');
       cell.className = 'heatmap-cell';
 
-      if (!p.valid) {
+      if (p.x === -1 || p.x === BOARD_WIDTH) {
+        cell.classList.add('wall-cell');
+      } else if (!p.valid) {
         cell.classList.add('invalid-cell');
       } else if (p.gameOver) {
         cell.classList.add('game-over-cell');
@@ -1590,10 +1595,12 @@ function renderHeatmapPlaceholder(containerId) {
     label.className = 'heatmap-row-label';
     label.textContent = 'R' + rot;
     row.appendChild(label);
-    for (let c = 0; c < 10; c++) {
+    for (let c = 0; c < 12; c++) {
       const cell = document.createElement('div');
       cell.className = 'heatmap-cell';
-      cell.style.background = '#333';
+      if (c === 0 || c === 11) {
+        cell.classList.add('wall-cell');
+      }
       row.appendChild(cell);
     }
     container.appendChild(row);
