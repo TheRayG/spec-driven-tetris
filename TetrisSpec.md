@@ -22,12 +22,12 @@ Generate a complete, playable Tetris game in a **single `index.html` file** usin
 | Column | Content | Width |
 |--------|---------|-------|
 | Left | Controls list + Statistics | 180–220px |
-| Center | Game board + Next/Hold previews | Fixed board (250×500px) + sidebar |
+| Center | Game board + Next/Hold previews | Fixed board (220×440px) + sidebar |
 | Right | AI Visualization + AI Tuning | 180–240px |
 
 **Right column constraint**: Combined height of AI Visualization and AI Tuning panels must not exceed the game board wrapper height (~514px). Use compact spacing.
 
-**Responsive** (`@media max-width: 799px`): Stack vertically, center-aligned, 20px gap. Game container reorders to top via `order: -1`. Side panels become full width.
+**Responsive** (`@media max-width: 799px`): Stack vertically, center-aligned, 20px gap. Stacking order: game board (center, `order: -2`), right panel / AI viz (`order: -1`), left panel / controls (default order). Side panels become full width.
 
 **Glow effects**: Cyan box-shadow (`0 0 20px rgba(0,255,255,0.5)`) on the board wrapper.
 
@@ -36,7 +36,7 @@ Generate a complete, playable Tetris game in a **single `index.html` file** usin
 ## 3. Game Board & Pieces
 
 ### Board
-- 10 columns × 20 rows of 25px cells
+- 10 columns × 20 rows of 22px cells
 - 3px solid cyan border, 4px internal padding
 - Empty cells: `border: 1px solid rgba(0,0,0,0.1)`
 - Filled cells: `border: 1px solid rgba(255,255,255,0.3)`, `box-shadow: inset 0 0 5px rgba(0,0,0,0.5)`
@@ -46,7 +46,7 @@ Defined as 2D arrays. Colors in order: `cyan, yellow, purple, green, red, blue, 
 
 ### Preview Grids (Next & Hold)
 - Each preview wrapped in a container with the shared panel style: `background: rgba(0,0,0,0.5)`, `border: 1px solid rgba(0,255,255,0.3)`, 8px padding. Uppercase cyan label (8px) above the grid.
-- 4×4 grid, 20px per cell (80×80px total)
+- 4×4 grid, 17px per cell (68×68px total)
 - Subtle cell borders: `0.5px solid rgba(255,255,255,0.05)`
 - Filled cells match main board styling
 - Pieces placed at natural 0,0 coordinates (no centering logic)
@@ -186,6 +186,15 @@ All three sections share a consistent container style matching the right-panel A
 - Board wrapper with cyan border and glow
 - Next and Hold preview grids in a sidebar column, 15px gap between them
 
+**Touch/Accessibility Button Panel**: Below the Hold preview in the sidebar, using the shared panel style. Heading "ACTIONS".
+
+- **Action row** (flexbox, 4px gap): Three equal-width buttons — "AI" (toggles autoplay), "Pause" (pause/resume), "Reset" (restart with confirmation during active play). AI button gets `active-toggle` class (green highlight) when autoplay is on.
+- **D-pad** (inverted T layout, centered): Up arrow (rotate), Left/Right arrows (move), Down arrow (soft drop). Each button is 36×36px. Uses spacer divs to maintain the inverted T shape.
+- **Hard Drop button**: Below the D-pad, 78px wide × 32px tall, labeled "DROP". Performs hard drop.
+- All buttons share styling: `Press Start 2P` font, semi-transparent background (`rgba(255,255,255,0.08)`), subtle border, 3px border-radius, `:active` state with cyan highlight.
+- D-pad and DROP buttons follow the same guard as keyboard game controls: blocked during autoplay, pause, and game over.
+- All buttons use `touch-action: manipulation` and `user-select: none` for mobile friendliness.
+
 ### Right Panel — AI Visualization + AI Tuning
 
 **AI Visualization container** (above AI Tuning):
@@ -208,7 +217,7 @@ All three sections share a consistent container style matching the right-panel A
 | Bump | bumpiness | -0.8 | -1 | 0 | 0.1 |
 | Height | height | -0.10 | -0.1 | 0 | 0.01 |
 | Valley | valley | -1.0 | -1 | 0 | 0.1 |
-| Top N | overlayTopN | 3 | 1 | 5 | 1 |
+| Top N | overlayTopN | 1 | 1 | 5 | 1 |
 
 - Each slider item has a label row with the label (left) and current value (right, green) on the same line (flexbox `space-between`), with the range input below. Example: `Lines  2.0` above the slider.
 - Value formatting: Lines, Holes, Bump, Valley display with 1 decimal place zero-padded (e.g. `2.0`, `-1.0`). Height displays with 2 decimal places zero-padded (e.g. `-0.01`). Top N displays as integer. Apply this formatting consistently on slider input, reset defaults, and initial sync from localStorage.
@@ -341,7 +350,7 @@ Rendered during `drawBoard()` when viz is on and evaluation data exists.
 
 **Rendering**:
 1. Filter valid, non-game-over placements, sort by score descending
-2. Slice to top N (controlled by "Top N" slider, default 3)
+2. Slice to top N (controlled by "Top N" slider, default 1)
 3. For each placement, calculate hard-drop landing position
 4. Render in reverse rank order (worst first, best last → best on top)
 5. Only apply overlay styling to cells not already filled
