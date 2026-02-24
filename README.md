@@ -6,7 +6,9 @@ A complete, fully playable Tetris game built entirely in a single `index.html` f
 
 ## Play
 
-Open `index.html` in any modern browser. No build tools, no dependencies, no server required.
+**[Live Demo](https://tetris.therayg.com/)** — play it in your browser right now.
+
+Or open `index.html` locally in any modern browser. No build tools, no dependencies, no server required.
 
 ![Gameplay screenshot](TetrisGameplay.png)
 
